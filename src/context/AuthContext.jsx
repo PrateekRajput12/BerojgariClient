@@ -1,0 +1,43 @@
+import { createContext, useContext, useState, useEffect } from "react";
+import api from "../api/axios";
+import { toast } from "react-toastify";
+
+
+const AuthContext = createContext()
+
+export const AuthProvider = ({ children }) => {
+    const [user, setUser] = useState(null)
+    const [loading, setLoading] = useState(true)
+
+    const getMe = async () => {
+        try {
+            const res = await api.get("/auth/me")
+            console.log("fetch me in context", res)
+            setUser(res.data.user)
+        } catch (error) {
+            toast.error(error.message)
+            setUser(null)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const login = async (email, password) => {
+        await api.post('/auth/login', { email, password })
+        await getMe()
+    }
+
+    const logout = async () => {
+        await api.post("/auth/logout")
+        setUser(null)
+    }
+
+    useEffect(() => {
+        getMe()
+    }, [])
+    return (
+        <AuthContext.Provider value={{ user, login, logout, loading, }}>{children}</AuthContext.Provider>
+    )
+}
+
+export const useAuth = () => useContext(AuthContext)

@@ -14,9 +14,13 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            await login(email, password)
+            const user = await login(email, password)
             toast.success("Logged in Successfully")
-            navigate("/dashboard")
+            console.log(user)
+            if (user?.role === "HR") navigate("/hr");
+            if (user?.role === "Recruiter") navigate("/recruiter");
+            if (user?.role === "Interviewer") navigate("/interviewer");
+            if (user?.role === "Candidate") navigate("/candidate");
         } catch (error) {
             toast.error(error.message)
         }

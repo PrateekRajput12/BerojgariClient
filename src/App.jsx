@@ -1,5 +1,6 @@
 import React from 'react'
 import './App.css'
+import { ToastContainer } from 'react-toastify'
 import { useAuth } from './context/AuthContext'
 import { Navigate, Routes, Route } from 'react-router-dom'
 import Dashboard from './pages/Dashboard'
@@ -11,6 +12,8 @@ import InterviewDashboard from './pages/interviewer/InterviewDashboard'
 import RecruiterDashboard from './pages/recruiter/RecruiterDashboard'
 import Jobs from './pages/hr/Jobs'
 import Layout from './components/Layout'
+import CreateJob from './pages/hr/CreateJob'
+import EditJob from './pages/hr/EditJob'
 const App = () => {
   const { user, loading } = useAuth()
 
@@ -65,6 +68,38 @@ const App = () => {
           <RoleRoute allowedRoles={["HR"]}>
             <Layout>
               <Jobs />
+            </Layout>
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/hr/jobs"
+        element={
+          <RoleRoute allowedRoles={["HR"]}>
+            <Layout>
+              <Jobs />
+            </Layout>
+          </RoleRoute>
+        }
+      />
+
+      <Route
+        path="/hr/jobs/create"
+        element={
+          <RoleRoute allowedRoles={["HR"]}>
+            <Layout>
+              <CreateJob />
+            </Layout>
+          </RoleRoute>
+        }
+      />
+
+      <Route
+        path="/hr/jobs/edit/:id"
+        element={
+          <RoleRoute allowedRoles={["HR"]}>
+            <Layout>
+              <EditJob />
             </Layout>
           </RoleRoute>
         }

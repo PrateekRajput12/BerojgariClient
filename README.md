@@ -14,3 +14,7 @@
 - sidebar and navbar
 - currently side is not good we will fix and improve ui
 - logout and login working fine
+
+# Day-3 HR-Job 
+- create job , close job and update job and fetch all job
+- all done by hr and tested properly 

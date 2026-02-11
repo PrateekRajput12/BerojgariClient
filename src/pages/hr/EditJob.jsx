@@ -173,8 +173,8 @@ const EditJob = () => {
                             required
                         >
                             <option value="">Select Type</option>
-                            <option value="Full-time">Full-time</option>
-                            <option value="Part-time">Part-time</option>
+                            <option value="Full-time">Full-Time</option>
+                            <option value="Part-time">Part-Time</option>
                             <option value="Internship">Internship</option>
                             <option value="Contract">Contract</option>
                         </select>

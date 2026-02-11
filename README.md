@@ -18,3 +18,15 @@
 # Day-3 HR-Job 
 - create job , close job and update job and fetch all job
 - all done by hr and tested properly 
+
+# Day-4 Candidate-Job
+- apply job 
+- see all jobs
+- tested 
+
+# Day-5 Recruiter 
+- status update 
+- fetch application according to job
+- tested working fine
+- problem in seeing resume
+- fixed

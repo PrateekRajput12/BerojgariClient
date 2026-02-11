@@ -14,6 +14,9 @@ import Jobs from './pages/hr/Jobs'
 import Layout from './components/Layout'
 import CreateJob from './pages/hr/CreateJob'
 import EditJob from './pages/hr/EditJob'
+import JobDetails from './pages/candidate/JobDetails'
+import CandidateJobs from './pages/candidate/Jobs'
+import Applications from './pages/recruiter/Applications'
 const App = () => {
   const { user, loading } = useAuth()
 
@@ -101,6 +104,36 @@ const App = () => {
             <Layout>
               <EditJob />
             </Layout>
+          </RoleRoute>
+        }
+      />
+
+      <Route
+        path="/candidate/jobs"
+        element={
+          <RoleRoute allowedRoles={["Candidate"]}>
+            <Layout>
+              <CandidateJobs />
+            </Layout>
+          </RoleRoute>
+        }
+      />
+
+      <Route
+        path="/candidate/jobs/:id"
+        element={
+          <RoleRoute allowedRoles={["Candidate"]}>
+            <Layout>
+              <JobDetails />
+            </Layout>
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/recruiter/applications"
+        element={
+          <RoleRoute allowedRoles={["Recruiter"]}>
+            <Layout> <Applications /></Layout>
           </RoleRoute>
         }
       />

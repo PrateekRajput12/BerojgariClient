@@ -33,7 +33,7 @@ const Sidebar = () => {
             {user?.role === "Interviewer" && (
                 <>
                     <p><Link to="/interviewer" style={{ color: "white" }}>Dashboard</Link></p>
-                    <p><Link to="/interviewer/my-interviews" style={{ color: "white" }}>My Interviews</Link></p>
+                    <p><Link to="/interviewer/applications" style={{ color: "white" }}>My Interviews</Link></p>
                 </>
             )}
 

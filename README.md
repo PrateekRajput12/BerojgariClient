@@ -30,3 +30,13 @@
 - tested working fine
 - problem in seeing resume
 - fixed
+
+
+# Day-6 Interviewr
+-
+
+
+# Day-7 Offer
+- hr -create offer
+- candidate fetch offer of own and then accept and reject
+- reject accept not tested other tested

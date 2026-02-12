@@ -17,6 +17,9 @@ import EditJob from './pages/hr/EditJob'
 import JobDetails from './pages/candidate/JobDetails'
 import CandidateJobs from './pages/candidate/Jobs'
 import Applications from './pages/recruiter/Applications'
+import MyInterviews from './pages/interviewer/MyInterviews'
+import Offers from './pages/hr/Offers'
+import CandidateOffer from './pages/candidate/CandidateOffer'
 const App = () => {
   const { user, loading } = useAuth()
 
@@ -137,6 +140,40 @@ const App = () => {
           </RoleRoute>
         }
       />
+      <Route
+        path="/interviewer/my-interviews"
+        element={
+          <RoleRoute allowedRoles={["Interviewer"]}>
+            <Layout>
+              <MyInterviews />
+            </Layout>
+          </RoleRoute>
+        }
+      />
+      <Route
+        path="/hr/offers"
+        element={
+          <RoleRoute allowedRoles={["HR"]}>
+            <Layout>
+              <Offers />
+            </Layout>
+          </RoleRoute>
+        }
+      />
+
+      <Route
+        path="/candidate/offers"
+        element={
+          <RoleRoute allowedRoles={["Candidate"]}>
+            <Layout>
+              <CandidateOffer />
+            </Layout>
+          </RoleRoute>
+        }
+      />
+
+
+
       <Route path="*" element={<Navigate to="/login" />} />
 
     </Routes>

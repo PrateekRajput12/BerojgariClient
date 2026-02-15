@@ -6,7 +6,10 @@ import { toast } from "react-toastify";
 
 const JobDetails = () => {
     const { id } = useParams();
+
     const [job, setJob] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
 
     const [form, setForm] = useState({
         name: "",
@@ -22,9 +25,13 @@ const JobDetails = () => {
                 const res = await api.get(`/job/${id}`);
                 setJob(res.data.job);
             } catch (error) {
+                console.log(error)
                 toast.error("Failed to fetch job");
+            } finally {
+                setLoading(false);
             }
         };
+
         fetchJob();
     }, [id]);
 
@@ -55,83 +62,159 @@ const JobDetails = () => {
         formData.append("resume", resume);
 
         try {
+            setSubmitting(true);
+
             const { data } = await api.post(
                 `/applications/${id}/apply`,
                 formData
             );
 
             toast.success(data.message);
+
+            // Reset form
+            setForm({ name: "", email: "", phone: "" });
+            setResume(null);
+
         } catch (error) {
             toast.error(
                 error.response?.data?.message || "Error applying"
             );
+        } finally {
+            setSubmitting(false);
         }
     };
 
-    if (!job) return <Layout><p>Loading...</p></Layout>;
+    if (loading)
+        return (
+            <Layout>
+                <div className="text-center py-20 text-gray-500">
+                    Loading job details...
+                </div>
+            </Layout>
+        );
+
+    if (!job)
+        return (
+            <Layout>
+                <div className="text-center py-20 text-red-500">
+                    Job not found
+                </div>
+            </Layout>
+        );
 
     return (
         <Layout>
-            <h2>{job.title}</h2>
-            <p>{job.description}</p>
-            <p>Location: {job.location}</p>
-            <p>Salary: {job.salary}</p>
+            <div className="max-w-5xl mx-auto py-10 px-4">
 
-            <hr />
+                {/* Job Card */}
+                <div className="bg-white shadow-md rounded-xl p-8 mb-10">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                        {job.title}
+                    </h2>
 
-            <h3>Apply Now</h3>
+                    <p className="text-gray-600 mb-6">
+                        {job.description}
+                    </p>
 
-            <form onSubmit={handleApply}>
-
-                <div>
-                    <label>Name</label><br />
-                    <input
-                        type="text"
-                        name="name"
-                        value={form.name}
-                        onChange={handleChange}
-                        required
-                    />
+                    <div className="grid sm:grid-cols-2 gap-4 text-sm text-gray-700">
+                        <p>
+                            <span className="font-semibold">Location:</span> {job.location}
+                        </p>
+                        <p>
+                            <span className="font-semibold">Salary:</span> ₹{job.salary}
+                        </p>
+                    </div>
                 </div>
-                <br />
 
-                <div>
-                    <label>Email</label><br />
-                    <input
-                        type="email"
-                        name="email"
-                        value={form.email}
-                        onChange={handleChange}
-                        required
-                    />
+                {/* Application Form */}
+                <div className="bg-white shadow-md rounded-xl p-8">
+                    <h3 className="text-xl font-semibold mb-6 text-gray-800">
+                        Apply for this Job
+                    </h3>
+
+                    <form
+                        onSubmit={handleApply}
+                        className="grid md:grid-cols-2 gap-6"
+                    >
+                        {/* Name */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                Full Name
+                            </label>
+                            <input
+                                type="text"
+                                name="name"
+                                value={form.name}
+                                onChange={handleChange}
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
+                                required
+                            />
+                        </div>
+
+                        {/* Email */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                Email Address
+                            </label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={form.email}
+                                onChange={handleChange}
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
+                                required
+                            />
+                        </div>
+
+                        {/* Phone */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                Phone Number
+                            </label>
+                            <input
+                                type="text"
+                                name="phone"
+                                value={form.phone}
+                                onChange={handleChange}
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
+                                required
+                            />
+                        </div>
+
+                        {/* Resume Upload */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                Upload Resume
+                            </label>
+                            <input
+                                type="file"
+                                accept=".pdf,.doc,.docx"
+                                onChange={(e) =>
+                                    setResume(e.target.files[0])
+                                }
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                                required
+                            />
+                        </div>
+
+                        {/* Submit Button */}
+                        <div className="md:col-span-2">
+                            <button
+                                type="submit"
+                                disabled={submitting}
+                                className={`w-full py-3 rounded-lg text-white font-medium transition ${submitting
+                                    ? "bg-gray-400 cursor-not-allowed"
+                                    : "bg-purple-600 hover:bg-purple-700"
+                                    }`}
+                            >
+                                {submitting
+                                    ? "Submitting..."
+                                    : "Submit Application"}
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <br />
-
-                <div>
-                    <label>Phone</label><br />
-                    <input
-                        type="text"
-                        name="phone"
-                        value={form.phone}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <br />
-
-                <div>
-                    <label>Upload Resume</label><br />
-                    <input
-                        type="file"
-                        accept=".pdf,.doc,.docx"
-                        onChange={(e) => setResume(e.target.files[0])}
-                        required
-                    />
-                </div>
-                <br />
-
-                <button type="submit">Submit Application</button>
-            </form>
+            </div>
         </Layout>
     );
 };

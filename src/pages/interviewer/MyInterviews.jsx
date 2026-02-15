@@ -24,75 +24,120 @@ const MyInterviews = () => {
     const submitFeedback = async (id, result) => {
         try {
             await api.patch(`/interviews/${id}/feedback`, { result });
-            alert("Feedback submitted successfully");
-            fetchInterviews(); // refresh list
+            fetchInterviews();
         } catch (error) {
             console.error("Error submitting feedback:", error);
             alert("Failed to submit feedback");
         }
     };
 
+    const getStatusBadge = (result) => {
+        switch (result) {
+            case "Pass":
+                return "bg-green-100 text-green-700";
+            case "Fail":
+                return "bg-red-100 text-red-700";
+            default:
+                return "bg-yellow-100 text-yellow-700";
+        }
+    };
+
     return (
         <Layout>
-            <h2>My Interviews</h2>
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
 
-            {loading && <p>Loading...</p>}
+                <h2 className="text-3xl font-bold text-gray-800 mb-8">
+                    My Interviews
+                </h2>
 
-            {!loading && interviews.length === 0 && (
-                <p>No interviews found</p>
-            )}
+                {loading && (
+                    <div className="flex justify-center items-center h-40">
+                        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-purple-600"></div>
+                    </div>
+                )}
 
-            {interviews.map((interview) => (
-                <div
-                    key={interview._id}
-                    style={{
-                        border: "1px solid gray",
-                        margin: "10px",
-                        padding: "10px",
-                        borderRadius: "6px",
-                    }}
-                >
-                    <h3>
-                        Candidate: {interview.application?.candidate?.name}
-                    </h3>
+                {!loading && interviews.length === 0 && (
+                    <div className="bg-white p-6 rounded-xl shadow text-center">
+                        <p className="text-gray-500">
+                            No interviews found
+                        </p>
+                    </div>
+                )}
 
-                    <p>Email: {interview.application?.candidate?.email}</p>
-                    <p>Round: {interview.round}</p>
-                    <p>
-                        Scheduled At:{" "}
-                        {new Date(interview.scheduledAt).toLocaleString()}
-                    </p>
-                    <p>Mode: {interview.mode}</p>
-                    <p>
-                        Result:{" "}
-                        {interview.result === "Pending"
-                            ? "Pending"
-                            : interview.result}
-                    </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {interviews.map((interview) => (
+                        <div
+                            key={interview._id}
+                            className="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl hover:-translate-y-2 transition-all duration-300"
+                        >
+                            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                                {interview.application?.candidate?.name}
+                            </h3>
 
-                    {/* SHOW BUTTON ONLY IF RESULT IS PENDING */}
-                    {interview.result === "Pending" && (
-                        <>
-                            <button
-                                onClick={() =>
-                                    submitFeedback(interview._id, "Pass")
-                                }
-                                style={{ marginRight: "10px" }}
-                            >
-                                Pass
-                            </button>
+                            <p className="text-sm text-gray-500 mb-1">
+                                📧 {interview.application?.candidate?.email}
+                            </p>
 
-                            <button
-                                onClick={() =>
-                                    submitFeedback(interview._id, "Fail")
-                                }
-                            >
-                                Fail
-                            </button>
-                        </>
-                    )}
+                            <p className="text-sm text-gray-600 mt-2">
+                                <span className="font-medium">Round:</span>{" "}
+                                {interview.round}
+                            </p>
+
+                            <p className="text-sm text-gray-600">
+                                <span className="font-medium">
+                                    Scheduled:
+                                </span>{" "}
+                                {new Date(
+                                    interview.scheduledAt
+                                ).toLocaleString()}
+                            </p>
+
+                            <p className="text-sm text-gray-600 mb-3">
+                                <span className="font-medium">Mode:</span>{" "}
+                                {interview.mode}
+                            </p>
+
+                            <div className="mb-4">
+                                <span
+                                    className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusBadge(
+                                        interview.result
+                                    )}`}
+                                >
+                                    {interview.result}
+                                </span>
+                            </div>
+
+                            {interview.result === "Pending" && (
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={() =>
+                                            submitFeedback(
+                                                interview._id,
+                                                "Pass"
+                                            )
+                                        }
+                                        className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg text-sm font-medium transition duration-300"
+                                    >
+                                        Pass
+                                    </button>
+
+                                    <button
+                                        onClick={() =>
+                                            submitFeedback(
+                                                interview._id,
+                                                "Fail"
+                                            )
+                                        }
+                                        className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm font-medium transition duration-300"
+                                    >
+                                        Fail
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    ))}
                 </div>
-            ))}
+            </div>
         </Layout>
     );
 };

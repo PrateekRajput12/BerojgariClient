@@ -1,1 +1,60 @@
 @import "tailwindcss";
+
+.job-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.job-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.job-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.job-form input,
+.job-form textarea,
+.job-form select {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 100%;
+}
+
+.job-form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.job-form button {
+    padding: 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: #2563eb;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.job-form button:hover {
+    background-color: #1e40af;
+}
+
+@media (max-width: 768px) {
+    .job-container {
+        padding: 15px;
+    }
+
+    .job-form input,
+    .job-form textarea,
+    .job-form select {
+        font-size: 14px;
+    }
+}

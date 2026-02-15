@@ -20,12 +20,10 @@ const EditJob = () => {
 
     const [loading, setLoading] = useState(false);
 
-    // ✅ Fetch job data
     useEffect(() => {
         const fetchJob = async () => {
             try {
                 const { data } = await api.get(`/job/${id}`);
-
                 if (data?.job) {
                     setForm({
                         title: data.job.title || "",
@@ -40,39 +38,27 @@ const EditJob = () => {
                     });
                 }
             } catch (error) {
-                toast.error(
-                    error.response?.data?.message || "Failed to fetch job"
-                );
+                toast.error(error.response?.data?.message || "Failed to fetch job");
             }
         };
 
         if (id) fetchJob();
     }, [id]);
 
-    // ✅ Handle input change
     const handleChange = (e) => {
-        setForm((prev) => ({
-            ...prev,
-            [e.target.name]: e.target.value,
-        }));
+        setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    // ✅ Submit updated job
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
 
         try {
-            const { data } = await api.put(`/job/update/${id}`, form);
-            toast.success(data?.message)
+            await api.put(`/job/update/${id}`, form);
             toast.success("Job updated successfully");
-
-            // Redirect after success
             navigate("/hr/jobs");
         } catch (error) {
-            toast.error(
-                error.response?.data?.message || "Failed to update job"
-            );
+            toast.error(error.response?.data?.message || "Failed to update job");
         } finally {
             setLoading(false);
         }
@@ -80,126 +66,77 @@ const EditJob = () => {
 
     return (
         <Layout>
-            <div style={{ maxWidth: "600px", margin: "auto" }}>
+            <div className="job-container">
                 <h2>Edit Job</h2>
 
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} className="job-form">
+                    <input
+                        name="title"
+                        value={form.title}
+                        onChange={handleChange}
+                        placeholder="Job Title"
+                        required
+                    />
 
-                    {/* Title */}
-                    <div>
-                        <label htmlFor="title">Job Title</label>
-                        <br />
-                        <input
-                            id="title"
-                            type="text"
-                            name="title"
-                            value={form.title}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <br />
+                    <textarea
+                        name="description"
+                        value={form.description}
+                        onChange={handleChange}
+                        placeholder="Job Description"
+                        required
+                    />
 
-                    {/* Description */}
-                    <div>
-                        <label htmlFor="description">Job Description</label>
-                        <br />
-                        <textarea
-                            id="description"
-                            name="description"
-                            value={form.description}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <br />
+                    <textarea
+                        name="requirements"
+                        value={form.requirements}
+                        onChange={handleChange}
+                        placeholder="Requirements"
+                        required
+                    />
 
-                    {/* Requirements */}
-                    <div>
-                        <label htmlFor="requirements">Requirements</label>
-                        <br />
-                        <textarea
-                            id="requirements"
-                            name="requirements"
-                            value={form.requirements}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <br />
+                    <input
+                        name="location"
+                        value={form.location}
+                        onChange={handleChange}
+                        placeholder="Location"
+                        required
+                    />
 
-                    {/* Location */}
-                    <div>
-                        <label htmlFor="location">Location</label>
-                        <br />
-                        <input
-                            id="location"
-                            type="text"
-                            name="location"
-                            value={form.location}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <br />
+                    <select
+                        name="shift"
+                        value={form.shift}
+                        onChange={handleChange}
+                        required
+                    >
+                        <option value="">Select Shift</option>
+                        <option value="Day">Day</option>
+                        <option value="Night">Night</option>
+                    </select>
 
-                    {/* Shift */}
-                    <div>
-                        <label htmlFor="shift">Shift</label>
-                        <br />
-                        <select
-                            id="shift"
-                            name="shift"
-                            value={form.shift}
-                            onChange={handleChange}
-                            required
-                        >
-                            <option value="">Select Shift</option>
-                            <option value="Day">Day</option>
-                            <option value="Night">Night</option>
-                        </select>
-                    </div>
-                    <br />
+                    <select
+                        name="employmentType"
+                        value={form.employmentType}
+                        onChange={handleChange}
+                        required
+                    >
+                        <option value="">Select Type</option>
+                        <option value="Full-time">Full-Time</option>
+                        <option value="Part-time">Part-Time</option>
+                        <option value="Internship">Internship</option>
+                        <option value="Contract">Contract</option>
+                    </select>
 
-                    {/* Employment Type */}
-                    <div>
-                        <label htmlFor="employmentType">Employment Type</label>
-                        <br />
-                        <select
-                            id="employmentType"
-                            name="employmentType"
-                            value={form.employmentType}
-                            onChange={handleChange}
-                            required
-                        >
-                            <option value="">Select Type</option>
-                            <option value="Full-time">Full-Time</option>
-                            <option value="Part-time">Part-Time</option>
-                            <option value="Internship">Internship</option>
-                            <option value="Contract">Contract</option>
-                        </select>
-                    </div>
-                    <br />
-
-                    {/* Expiry Date */}
-                    <div>
-                        <label htmlFor="expiryDate">Expiry Date</label>
-                        <br />
-                        <input
-                            id="expiryDate"
-                            type="date"
-                            name="expiryDate"
-                            value={form.expiryDate}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <br />
+                    <input
+                        type="date"
+                        name="expiryDate"
+                        value={form.expiryDate}
+                        onChange={handleChange}
+                        required
+                    />
 
                     <button type="submit" disabled={loading}>
                         {loading ? "Updating..." : "Update Job"}
                     </button>
-
                 </form>
             </div>
         </Layout>

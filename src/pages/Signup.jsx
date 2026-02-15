@@ -3,25 +3,33 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const Login = () => {
-    const { login } = useAuth();
+const Signup = () => {
+    const { register } = useAuth(); // make sure register exists in AuthContext
     const navigate = useNavigate();
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        password: "",
+        role: "",
+    });
+
     const [showPassword, setShowPassword] = useState(false);
-    const [remember, setRemember] = useState(false);
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value,
+        });
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            const user = await login(email, password);
-            toast.success("Logged in Successfully");
 
-            if (user?.role === "HR") navigate("/hr");
-            if (user?.role === "Recruiter") navigate("/recruiter");
-            if (user?.role === "Interviewer") navigate("/interviewer");
-            if (user?.role === "Candidate") navigate("/candidate");
+        try {
+            await register(formData);
+            toast.success("Account Created Successfully 🎉");
+            navigate("/login");
         } catch (error) {
             toast.error(error.message);
         }
@@ -34,27 +42,64 @@ const Login = () => {
                 {/* LEFT SIDE */}
                 <div className="w-full md:w-1/2 p-10">
                     <h2 className="text-2xl font-bold text-gray-800">
-                        Login to your Account
+                        Create your Account
                     </h2>
                     <p className="text-gray-500 text-sm mt-1 mb-6">
-                        Welcome back! Select the below login methods.
+                        Join us today! Fill in the details below.
                     </p>
 
                     <form onSubmit={handleSubmit} className="space-y-5">
 
-                        {/* Email */}
+                        {/* Name */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Email ID / Username
+                                Full Name
                             </label>
                             <input
-                                type="email"
-                                placeholder="Enter email id / username"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                type="text"
+                                name="name"
+                                placeholder="Enter your full name"
+                                value={formData.name}
+                                onChange={handleChange}
                                 required
                                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-600"
                             />
+                        </div>
+
+                        {/* Email */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Email Address
+                            </label>
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="Enter your email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                required
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                            />
+                        </div>
+
+                        {/* Role */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Select Role
+                            </label>
+                            <select
+                                name="role"
+                                value={formData.role}
+                                onChange={handleChange}
+                                required
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-purple-600"
+                            >
+                                <option value="">Choose your role</option>
+                                <option value="HR">HR</option>
+                                <option value="Recruiter">Recruiter</option>
+                                <option value="Interviewer">Interviewer</option>
+                                <option value="Candidate">Candidate</option>
+                            </select>
                         </div>
 
                         {/* Password */}
@@ -66,9 +111,10 @@ const Login = () => {
                             <div className="relative">
                                 <input
                                     type={showPassword ? "text" : "password"}
-                                    placeholder="Enter password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    name="password"
+                                    placeholder="Create password"
+                                    value={formData.password}
+                                    onChange={handleChange}
                                     required
                                     className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-16 focus:outline-none focus:ring-2 focus:ring-purple-600"
                                 />
@@ -82,35 +128,18 @@ const Login = () => {
                             </div>
                         </div>
 
-                        {/* Remember + Forgot */}
-                        <div className="flex items-center justify-between text-sm">
-                            <label className="flex items-center gap-2 text-gray-600">
-                                <input
-                                    type="checkbox"
-                                    checked={remember}
-                                    onChange={() => setRemember(!remember)}
-                                    className="accent-purple-600"
-                                />
-                                Remember me
-                            </label>
-
-                            <span className="text-purple-600 cursor-pointer hover:underline">
-                                Forgot Password?
-                            </span>
-                        </div>
-
                         {/* Button */}
                         <button
                             type="submit"
                             className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg font-semibold transition duration-300"
                         >
-                            Login
+                            Sign Up
                         </button>
 
                         {/* Divider */}
                         <div className="flex items-center my-4">
                             <div className="flex-grow h-px bg-gray-300"></div>
-                            <span className="px-3 text-gray-400 text-sm">or login with</span>
+                            <span className="px-3 text-gray-400 text-sm">or sign up with</span>
                             <div className="flex-grow h-px bg-gray-300"></div>
                         </div>
 
@@ -141,11 +170,14 @@ const Login = () => {
                             </button>
                         </div>
 
-                        {/* Register */}
+                        {/* Login link */}
                         <p className="text-center text-sm text-gray-600 mt-4">
-                            Don't have an account?{" "}
-                            <span className="text-purple-600 font-medium cursor-pointer hover:underline">
-                                Register
+                            Already have an account?{" "}
+                            <span
+                                onClick={() => navigate("/login")}
+                                className="text-purple-600 font-medium cursor-pointer hover:underline"
+                            >
+                                Login
                             </span>
                         </p>
                     </form>
@@ -154,8 +186,8 @@ const Login = () => {
                 {/* RIGHT SIDE IMAGE */}
                 <div className="hidden md:flex w-1/2 bg-purple-50 items-center justify-center p-8">
                     <img
-                        src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-                        alt="Login Illustration"
+                        src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png"
+                        alt="Signup Illustration"
                         className="w-80"
                     />
                 </div>
@@ -165,4 +197,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Signup;

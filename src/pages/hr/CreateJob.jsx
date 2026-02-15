@@ -166,8 +166,8 @@ const CreateJob = () => {
                                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
                                 >
                                     <option value="">Select Type</option>
-                                    <option value="Full-time">Full-Time</option>
-                                    <option value="Part-time">Part-Time</option>
+                                    <option value="Full-Time">Full-Time</option>
+                                    <option value="Part-Time">Part-Time</option>
                                     <option value="Internship">Internship</option>
                                     <option value="Contract">Contract</option>
                                 </select>

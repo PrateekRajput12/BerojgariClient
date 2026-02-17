@@ -29,6 +29,7 @@ const CandidateDashboard = () => {
                             key={index}
                             title={card.title}
                             desc={card.desc}
+                            url={card.url}
                         />
                     ))}
                 </div>

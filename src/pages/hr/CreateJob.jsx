@@ -41,152 +41,152 @@ const CreateJob = () => {
     };
 
     return (
-        <Layout>
-            <div className="max-w-4xl mx-auto py-10 px-4">
-                <div className="bg-white shadow-xl rounded-2xl p-8">
 
-                    <h2 className="text-2xl font-bold text-gray-800 mb-6">
-                        Create New Job
-                    </h2>
+        <div className="max-w-4xl mx-auto py-10 px-4">
+            <div className="bg-white shadow-xl rounded-2xl p-8">
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-6">
+                    Create New Job
+                </h2>
 
-                        {/* Job Title */}
+                <form onSubmit={handleSubmit} className="space-y-6">
+
+                    {/* Job Title */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                            Job Title
+                        </label>
+                        <input
+                            name="title"
+                            value={form.title}
+                            onChange={handleChange}
+                            required
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                            placeholder="Frontend Developer"
+                        />
+                    </div>
+
+                    {/* Description */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                            Job Description
+                        </label>
+                        <textarea
+                            name="description"
+                            value={form.description}
+                            onChange={handleChange}
+                            required
+                            rows={4}
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                            placeholder="Describe job responsibilities..."
+                        />
+                    </div>
+
+                    {/* Requirements */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                            Requirements
+                        </label>
+                        <textarea
+                            name="requirements"
+                            value={form.requirements}
+                            onChange={handleChange}
+                            required
+                            rows={3}
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                            placeholder="React, Node.js, MongoDB..."
+                        />
+                    </div>
+
+                    {/* Grid Row */}
+                    <div className="grid md:grid-cols-2 gap-6">
+
+                        {/* Location */}
                         <div>
                             <label className="block text-sm font-medium text-gray-600 mb-1">
-                                Job Title
+                                Location
                             </label>
                             <input
-                                name="title"
-                                value={form.title}
+                                name="location"
+                                value={form.location}
                                 onChange={handleChange}
                                 required
                                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                placeholder="Frontend Developer"
+                                placeholder="Noida / Remote"
                             />
                         </div>
 
-                        {/* Description */}
+                        {/* Expiry Date */}
                         <div>
                             <label className="block text-sm font-medium text-gray-600 mb-1">
-                                Job Description
+                                Expiry Date
                             </label>
-                            <textarea
-                                name="description"
-                                value={form.description}
+                            <input
+                                type="date"
+                                name="expiryDate"
+                                value={form.expiryDate}
                                 onChange={handleChange}
                                 required
-                                rows={4}
                                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                placeholder="Describe job responsibilities..."
                             />
                         </div>
+                    </div>
 
-                        {/* Requirements */}
+                    {/* Grid Row */}
+                    <div className="grid md:grid-cols-2 gap-6">
+
+                        {/* Shift */}
                         <div>
                             <label className="block text-sm font-medium text-gray-600 mb-1">
-                                Requirements
+                                Shift
                             </label>
-                            <textarea
-                                name="requirements"
-                                value={form.requirements}
+                            <select
+                                name="shift"
+                                value={form.shift}
                                 onChange={handleChange}
                                 required
-                                rows={3}
                                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                placeholder="React, Node.js, MongoDB..."
-                            />
+                            >
+                                <option value="">Select Shift</option>
+                                <option value="Day">Day</option>
+                                <option value="Night">Night</option>
+                            </select>
                         </div>
 
-                        {/* Grid Row */}
-                        <div className="grid md:grid-cols-2 gap-6">
-
-                            {/* Location */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">
-                                    Location
-                                </label>
-                                <input
-                                    name="location"
-                                    value={form.location}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                    placeholder="Noida / Remote"
-                                />
-                            </div>
-
-                            {/* Expiry Date */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">
-                                    Expiry Date
-                                </label>
-                                <input
-                                    type="date"
-                                    name="expiryDate"
-                                    value={form.expiryDate}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                />
-                            </div>
+                        {/* Employment Type */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-600 mb-1">
+                                Employment Type
+                            </label>
+                            <select
+                                name="employmentType"
+                                value={form.employmentType}
+                                onChange={handleChange}
+                                required
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                            >
+                                <option value="">Select Type</option>
+                                <option value="Full-Time">Full-Time</option>
+                                <option value="Part-Time">Part-Time</option>
+                                <option value="Internship">Internship</option>
+                                <option value="Contract">Contract</option>
+                            </select>
                         </div>
+                    </div>
 
-                        {/* Grid Row */}
-                        <div className="grid md:grid-cols-2 gap-6">
+                    {/* Submit Button */}
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-medium transition duration-300 disabled:opacity-50"
+                    >
+                        {loading ? "Creating..." : "Create Job"}
+                    </button>
 
-                            {/* Shift */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">
-                                    Shift
-                                </label>
-                                <select
-                                    name="shift"
-                                    value={form.shift}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                >
-                                    <option value="">Select Shift</option>
-                                    <option value="Day">Day</option>
-                                    <option value="Night">Night</option>
-                                </select>
-                            </div>
-
-                            {/* Employment Type */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">
-                                    Employment Type
-                                </label>
-                                <select
-                                    name="employmentType"
-                                    value={form.employmentType}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                >
-                                    <option value="">Select Type</option>
-                                    <option value="Full-Time">Full-Time</option>
-                                    <option value="Part-Time">Part-Time</option>
-                                    <option value="Internship">Internship</option>
-                                    <option value="Contract">Contract</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        {/* Submit Button */}
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-medium transition duration-300 disabled:opacity-50"
-                        >
-                            {loading ? "Creating..." : "Create Job"}
-                        </button>
-
-                    </form>
-                </div>
+                </form>
             </div>
-        </Layout>
+        </div>
+
     );
 };
 

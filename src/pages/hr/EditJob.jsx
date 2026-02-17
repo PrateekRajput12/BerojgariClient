@@ -65,81 +65,81 @@ const EditJob = () => {
     };
 
     return (
-        <Layout>
-            <div className="job-container">
-                <h2>Edit Job</h2>
 
-                <form onSubmit={handleSubmit} className="job-form">
-                    <input
-                        name="title"
-                        value={form.title}
-                        onChange={handleChange}
-                        placeholder="Job Title"
-                        required
-                    />
+        <div className="job-container">
+            <h2>Edit Job</h2>
 
-                    <textarea
-                        name="description"
-                        value={form.description}
-                        onChange={handleChange}
-                        placeholder="Job Description"
-                        required
-                    />
+            <form onSubmit={handleSubmit} className="job-form">
+                <input
+                    name="title"
+                    value={form.title}
+                    onChange={handleChange}
+                    placeholder="Job Title"
+                    required
+                />
 
-                    <textarea
-                        name="requirements"
-                        value={form.requirements}
-                        onChange={handleChange}
-                        placeholder="Requirements"
-                        required
-                    />
+                <textarea
+                    name="description"
+                    value={form.description}
+                    onChange={handleChange}
+                    placeholder="Job Description"
+                    required
+                />
 
-                    <input
-                        name="location"
-                        value={form.location}
-                        onChange={handleChange}
-                        placeholder="Location"
-                        required
-                    />
+                <textarea
+                    name="requirements"
+                    value={form.requirements}
+                    onChange={handleChange}
+                    placeholder="Requirements"
+                    required
+                />
 
-                    <select
-                        name="shift"
-                        value={form.shift}
-                        onChange={handleChange}
-                        required
-                    >
-                        <option value="">Select Shift</option>
-                        <option value="Day">Day</option>
-                        <option value="Night">Night</option>
-                    </select>
+                <input
+                    name="location"
+                    value={form.location}
+                    onChange={handleChange}
+                    placeholder="Location"
+                    required
+                />
 
-                    <select
-                        name="employmentType"
-                        value={form.employmentType}
-                        onChange={handleChange}
-                        required
-                    >
-                        <option value="">Select Type</option>
-                        <option value="Full-time">Full-Time</option>
-                        <option value="Part-time">Part-Time</option>
-                        <option value="Internship">Internship</option>
-                        <option value="Contract">Contract</option>
-                    </select>
+                <select
+                    name="shift"
+                    value={form.shift}
+                    onChange={handleChange}
+                    required
+                >
+                    <option value="">Select Shift</option>
+                    <option value="Day">Day</option>
+                    <option value="Night">Night</option>
+                </select>
 
-                    <input
-                        type="date"
-                        name="expiryDate"
-                        value={form.expiryDate}
-                        onChange={handleChange}
-                        required
-                    />
+                <select
+                    name="employmentType"
+                    value={form.employmentType}
+                    onChange={handleChange}
+                    required
+                >
+                    <option value="">Select Type</option>
+                    <option value="Full-time">Full-Time</option>
+                    <option value="Part-time">Part-Time</option>
+                    <option value="Internship">Internship</option>
+                    <option value="Contract">Contract</option>
+                </select>
 
-                    <button type="submit" disabled={loading}>
-                        {loading ? "Updating..." : "Update Job"}
-                    </button>
-                </form>
-            </div>
-        </Layout>
+                <input
+                    type="date"
+                    name="expiryDate"
+                    value={form.expiryDate}
+                    onChange={handleChange}
+                    required
+                />
+
+                <button type="submit" disabled={loading}>
+                    {loading ? "Updating..." : "Update Job"}
+                </button>
+            </form>
+        </div>
+
     );
 };
 

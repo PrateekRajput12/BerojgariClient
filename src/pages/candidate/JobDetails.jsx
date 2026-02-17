@@ -103,119 +103,119 @@ const JobDetails = () => {
         );
 
     return (
-        <Layout>
-            <div className="max-w-5xl mx-auto py-10 px-4">
 
-                {/* Job Card */}
-                <div className="bg-white shadow-md rounded-xl p-8 mb-10">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                        {job.title}
-                    </h2>
+        <div className="max-w-5xl mx-auto py-10 px-4">
 
-                    <p className="text-gray-600 mb-6">
-                        {job.description}
+            {/* Job Card */}
+            <div className="bg-white shadow-md rounded-xl p-8 mb-10">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                    {job.title}
+                </h2>
+
+                <p className="text-gray-600 mb-6">
+                    {job.description}
+                </p>
+
+                <div className="grid sm:grid-cols-2 gap-4 text-sm text-gray-700">
+                    <p>
+                        <span className="font-semibold">Location:</span> {job.location}
                     </p>
-
-                    <div className="grid sm:grid-cols-2 gap-4 text-sm text-gray-700">
-                        <p>
-                            <span className="font-semibold">Location:</span> {job.location}
-                        </p>
-                        <p>
-                            <span className="font-semibold">Salary:</span> ₹{job.salary}
-                        </p>
-                    </div>
-                </div>
-
-                {/* Application Form */}
-                <div className="bg-white shadow-md rounded-xl p-8">
-                    <h3 className="text-xl font-semibold mb-6 text-gray-800">
-                        Apply for this Job
-                    </h3>
-
-                    <form
-                        onSubmit={handleApply}
-                        className="grid md:grid-cols-2 gap-6"
-                    >
-                        {/* Name */}
-                        <div>
-                            <label className="block text-sm font-medium mb-2">
-                                Full Name
-                            </label>
-                            <input
-                                type="text"
-                                name="name"
-                                value={form.name}
-                                onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
-                                required
-                            />
-                        </div>
-
-                        {/* Email */}
-                        <div>
-                            <label className="block text-sm font-medium mb-2">
-                                Email Address
-                            </label>
-                            <input
-                                type="email"
-                                name="email"
-                                value={form.email}
-                                onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
-                                required
-                            />
-                        </div>
-
-                        {/* Phone */}
-                        <div>
-                            <label className="block text-sm font-medium mb-2">
-                                Phone Number
-                            </label>
-                            <input
-                                type="text"
-                                name="phone"
-                                value={form.phone}
-                                onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
-                                required
-                            />
-                        </div>
-
-                        {/* Resume Upload */}
-                        <div>
-                            <label className="block text-sm font-medium mb-2">
-                                Upload Resume
-                            </label>
-                            <input
-                                type="file"
-                                accept=".pdf,.doc,.docx"
-                                onChange={(e) =>
-                                    setResume(e.target.files[0])
-                                }
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                                required
-                            />
-                        </div>
-
-                        {/* Submit Button */}
-                        <div className="md:col-span-2">
-                            <button
-                                type="submit"
-                                disabled={submitting}
-                                className={`w-full py-3 rounded-lg text-white font-medium transition ${submitting
-                                    ? "bg-gray-400 cursor-not-allowed"
-                                    : "bg-purple-600 hover:bg-purple-700"
-                                    }`}
-                            >
-                                {submitting
-                                    ? "Submitting..."
-                                    : "Submit Application"}
-                            </button>
-                        </div>
-                    </form>
+                    <p>
+                        <span className="font-semibold">Salary:</span> ₹{job.salary}
+                    </p>
                 </div>
             </div>
-        </Layout>
+
+            {/* Application Form */}
+            <div className="bg-white shadow-md rounded-xl p-8">
+                <h3 className="text-xl font-semibold mb-6 text-gray-800">
+                    Apply for this Job
+                </h3>
+
+                <form
+                    onSubmit={handleApply}
+                    className="grid md:grid-cols-2 gap-6"
+                >
+                    {/* Name */}
+                    <div>
+                        <label className="block text-sm font-medium mb-2">
+                            Full Name
+                        </label>
+                        <input
+                            type="text"
+                            name="name"
+                            value={form.name}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
+                            required
+                        />
+                    </div>
+
+                    {/* Email */}
+                    <div>
+                        <label className="block text-sm font-medium mb-2">
+                            Email Address
+                        </label>
+                        <input
+                            type="email"
+                            name="email"
+                            value={form.email}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
+                            required
+                        />
+                    </div>
+
+                    {/* Phone */}
+                    <div>
+                        <label className="block text-sm font-medium mb-2">
+                            Phone Number
+                        </label>
+                        <input
+                            type="text"
+                            name="phone"
+                            value={form.phone}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
+                            required
+                        />
+                    </div>
+
+                    {/* Resume Upload */}
+                    <div>
+                        <label className="block text-sm font-medium mb-2">
+                            Upload Resume
+                        </label>
+                        <input
+                            type="file"
+                            accept=".pdf,.doc,.docx"
+                            onChange={(e) =>
+                                setResume(e.target.files[0])
+                            }
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                            required
+                        />
+                    </div>
+
+                    {/* Submit Button */}
+                    <div className="md:col-span-2">
+                        <button
+                            type="submit"
+                            disabled={submitting}
+                            className={`w-full py-3 rounded-lg text-white font-medium transition ${submitting
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-purple-600 hover:bg-purple-700"
+                                }`}
+                        >
+                            {submitting
+                                ? "Submitting..."
+                                : "Submit Application"}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     );
 };
 

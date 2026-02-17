@@ -1,9 +1,10 @@
 import React from "react";
 import { useAuth } from "../../context/AuthContext";
 import { roleDashboardData } from "../../data/roleDashboardData";
+import { Link } from "react-router-dom";
 
 const RecruiterDashboard = () => {
-    const { user, logout } = useAuth();
+    const { user } = useAuth();
 
     // Get cards dynamically based on role
     const cards = roleDashboardData[user?.role] || [];
@@ -11,25 +12,7 @@ const RecruiterDashboard = () => {
     return (
         <div className="min-h-screen bg-gray-100">
 
-            {/* Navbar */}
-            <div className="bg-white shadow-sm px-4 sm:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <h1 className="text-xl font-bold text-purple-600">
-                    AlwaysApply
-                </h1>
 
-                <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6">
-                    <span className="text-gray-600 text-sm sm:text-base text-center sm:text-left">
-                        Welcome, <span className="font-semibold">{user?.name}</span>
-                    </span>
-
-                    <button
-                        onClick={logout}
-                        className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm w-full sm:w-auto"
-                    >
-                        Logout
-                    </button>
-                </div>
-            </div>
 
             {/* Hero Section */}
             <div className="bg-purple-100 py-16 px-8 text-center">
@@ -61,7 +44,11 @@ const RecruiterDashboard = () => {
                             </p>
 
                             <button className="mt-5 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm">
-                                Access
+                                <Link
+                                    to={card.url}
+                                >
+                                    Access
+                                </Link>
                             </button>
                         </div>
                     ))}

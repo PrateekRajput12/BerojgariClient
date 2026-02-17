@@ -21,7 +21,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             {/* Sidebar */}
             <div
                 className={`
-                fixed md:static top-0 left-0 h-full 
+                fixed md:static top-0 left-0 h-[100vh] 
                 bg-slate-900 text-white w-64 p-6
                 transform ${isOpen ? "translate-x-0" : "-translate-x-full"} 
                 md:translate-x-0 transition-transform duration-300 z-50
@@ -46,12 +46,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                             Jobs
                         </NavLink>
 
-                        <NavLink onClick={closeSidebar} to="/hr/interviews"
+                        {/* <NavLink onClick={closeSidebar} to="/hr/interviews"
                             className={({ isActive }) =>
                                 `${linkClass} ${isActive ? activeClass : ""}`
                             }>
                             Interviews
-                        </NavLink>
+                        </NavLink> */}
 
                         <NavLink onClick={closeSidebar} to="/hr/offers"
                             className={({ isActive }) =>
@@ -109,7 +109,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                             }>
                             Dashboard
                         </NavLink>
-
+                        <NavLink onClick={closeSidebar} to="/candidate/applications"
+                            className={({ isActive }) =>
+                                `${linkClass} ${isActive ? activeClass : ""}`
+                            }>
+                            My application
+                        </NavLink>
                         <NavLink onClick={closeSidebar} to="/candidate/jobs"
                             className={({ isActive }) =>
                                 `${linkClass} ${isActive ? activeClass : ""}`

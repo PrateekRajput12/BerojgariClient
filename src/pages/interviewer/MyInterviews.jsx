@@ -1,144 +1,110 @@
 import { useEffect, useState } from "react";
 import Layout from "../../components/Layout";
 import api from "../../api/axios";
+import { toast } from "react-toastify";
 
 const MyInterviews = () => {
     const [interviews, setInterviews] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [processingId, setProcessingId] = useState(null);
 
-    const fetchInterviews = async () => {
+    const fetchMyInterviews = async () => {
+        setLoading(true);
         try {
             const res = await api.get("/interviews/my");
-            setInterviews(res.data.interviews);
-        } catch (error) {
-            console.error("Error fetching interviews:", error);
+            setInterviews(res.data.interviews || []);
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to fetch interviews");
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchInterviews();
+        fetchMyInterviews();
     }, []);
 
-    const submitFeedback = async (id, result) => {
-        try {
-            await api.patch(`/interviews/${id}/feedback`, { result });
-            fetchInterviews();
-        } catch (error) {
-            console.error("Error submitting feedback:", error);
-            alert("Failed to submit feedback");
-        }
-    };
+    const submit = async (id, result) => {
+        const comment = prompt("Enter feedback comment (optional):") || "";
+        const scoreStr = prompt("Enter score (0-10) optional:") || "";
+        const score = scoreStr ? Number(scoreStr) : undefined;
 
-    const getStatusBadge = (result) => {
-        switch (result) {
-            case "Pass":
-                return "bg-green-100 text-green-700";
-            case "Fail":
-                return "bg-red-100 text-red-700";
-            default:
-                return "bg-yellow-100 text-yellow-700";
+        setProcessingId(id);
+        try {
+            await api.patch(`/interviews/${id}/feedback`, { comment, score, result });
+            toast.success("Feedback submitted");
+            await fetchMyInterviews();
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to submit feedback");
+        } finally {
+            setProcessingId(null);
         }
     };
 
     return (
-        <Layout>
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
 
-                <h2 className="text-3xl font-bold text-gray-800 mb-8">
-                    My Interviews
-                </h2>
+        <div className="max-w-5xl mx-auto px-4 py-10">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">My Interviews</h2>
 
-                {loading && (
-                    <div className="flex justify-center items-center h-40">
-                        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-purple-600"></div>
-                    </div>
-                )}
+            {loading && <p className="text-gray-600">Loading...</p>}
 
-                {!loading && interviews.length === 0 && (
-                    <div className="bg-white p-6 rounded-xl shadow text-center">
-                        <p className="text-gray-500">
-                            No interviews found
+            {!loading && interviews.length === 0 && (
+                <p className="text-gray-600">No interviews assigned.</p>
+            )}
+
+            <div className="grid md:grid-cols-2 gap-5">
+                {interviews.map((it) => (
+                    <div
+                        key={it._id}
+                        className="bg-white border rounded-2xl p-5 shadow-sm"
+                    >
+                        <h3 className="text-lg font-semibold text-gray-800">
+                            {it.application?.candidate?.name || "Candidate"}
+                        </h3>
+
+                        <p className="text-sm text-gray-600">
+                            Email: {it.application?.candidate?.email || "N/A"}
                         </p>
-                    </div>
-                )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {interviews.map((interview) => (
-                        <div
-                            key={interview._id}
-                            className="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl hover:-translate-y-2 transition-all duration-300"
-                        >
-                            <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                                {interview.application?.candidate?.name}
-                            </h3>
-
-                            <p className="text-sm text-gray-500 mb-1">
-                                📧 {interview.application?.candidate?.email}
+                        <div className="mt-3 text-sm text-gray-700 space-y-1">
+                            <p>
+                                Round: <b>{it.round}</b>
                             </p>
-
-                            <p className="text-sm text-gray-600 mt-2">
-                                <span className="font-medium">Round:</span>{" "}
-                                {interview.round}
+                            <p>
+                                Mode: <b>{it.mode}</b>
                             </p>
-
-                            <p className="text-sm text-gray-600">
-                                <span className="font-medium">
-                                    Scheduled:
-                                </span>{" "}
-                                {new Date(
-                                    interview.scheduledAt
-                                ).toLocaleString()}
+                            <p>
+                                Scheduled: <b>{new Date(it.scheduledAt).toLocaleString()}</b>
                             </p>
-
-                            <p className="text-sm text-gray-600 mb-3">
-                                <span className="font-medium">Mode:</span>{" "}
-                                {interview.mode}
+                            <p>
+                                Result: <b>{it.result}</b>
                             </p>
-
-                            <div className="mb-4">
-                                <span
-                                    className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusBadge(
-                                        interview.result
-                                    )}`}
-                                >
-                                    {interview.result}
-                                </span>
-                            </div>
-
-                            {interview.result === "Pending" && (
-                                <div className="flex gap-3">
-                                    <button
-                                        onClick={() =>
-                                            submitFeedback(
-                                                interview._id,
-                                                "Pass"
-                                            )
-                                        }
-                                        className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg text-sm font-medium transition duration-300"
-                                    >
-                                        Pass
-                                    </button>
-
-                                    <button
-                                        onClick={() =>
-                                            submitFeedback(
-                                                interview._id,
-                                                "Fail"
-                                            )
-                                        }
-                                        className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm font-medium transition duration-300"
-                                    >
-                                        Fail
-                                    </button>
-                                </div>
-                            )}
                         </div>
-                    ))}
-                </div>
+
+                        {it.result === "Pending" && (
+                            <div className="flex gap-3 mt-5">
+                                <button
+                                    disabled={processingId === it._id}
+                                    onClick={() => submit(it._id, "Pass")}
+                                    className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg disabled:opacity-50"
+                                >
+                                    Pass
+                                </button>
+
+                                <button
+                                    disabled={processingId === it._id}
+                                    onClick={() => submit(it._id, "Fail")}
+                                    className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg disabled:opacity-50"
+                                >
+                                    Fail
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                ))}
             </div>
-        </Layout>
+        </div>
+
     );
 };
 

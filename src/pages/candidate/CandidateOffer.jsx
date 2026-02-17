@@ -1,114 +1,120 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import Layout from "../../components/Layout";
 import api from "../../api/axios";
 import { toast } from "react-toastify";
 
-const CandidateOffer = () => {
+const CandidateOffers = () => {
     const [offers, setOffers] = useState([]);
+    const [processingId, setProcessingId] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    const fetchOffers = async () => {
+    const fetchMyOffers = async () => {
+        setLoading(true);
         try {
-            setLoading(true);
             const res = await api.get("/offers/my");
-            console.log(res)
             setOffers(res.data.offers || []);
-        } catch (error) {
-            console.error("Error fetching offers:", error);
-            toast.error("Failed to fetch offers");
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to fetch offers");
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchOffers();
+        fetchMyOffers();
     }, []);
 
-    const handleAction = async (id, type) => {
+    const accept = async (id) => {
+        setProcessingId(id);
         try {
-            await api.patch(`/offers/${id}/${type}`);
-            toast.success(`Offer ${type === "accept" ? "Accepted" : "Rejected"}`);
-            fetchOffers();
-        } catch (error) {
-            console.error(`${type} error:`, error);
-            toast.error("Something went wrong");
+            const res = await api.patch(`/offers/${id}/accept`);
+            toast.success(res.data.message || "Offer accepted");
+            await fetchMyOffers();
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Accept failed");
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
+    const reject = async (id) => {
+        setProcessingId(id);
+        try {
+            const res = await api.patch(`/offers/${id}/reject`);
+            toast.success(res.data.message || "Offer rejected");
+            await fetchMyOffers();
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Reject failed");
+        } finally {
+            setProcessingId(null);
         }
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 py-10 px-6">
-            <div className="max-w-4xl mx-auto">
 
-                <h1 className="text-2xl font-bold mb-8 text-gray-800">
-                    My Offers
-                </h1>
+        <div className="max-w-4xl mx-auto py-10 px-4">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">My Offers</h2>
 
-                {loading && (
-                    <div className="text-center text-gray-500">
-                        Loading offers...
-                    </div>
-                )}
+            {loading && <p className="text-gray-500">Loading...</p>}
 
-                {!loading && offers.length === 0 && (
-                    <div className="bg-white p-6 rounded-lg shadow text-center text-gray-500">
-                        No offers available
-                    </div>
-                )}
-
-                <div className="space-y-6">
-                    {offers.map((offer) => (
-                        <div
-                            key={offer._id}
-                            className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition"
-                        >
-                            <div className="flex justify-between items-center mb-4">
-                                <h2 className="text-lg font-semibold text-gray-800">
-                                    ₹{offer.salary}
-                                </h2>
-                                <span
-                                    className={`px-3 py-1 text-sm rounded-full ${offer.status === "Accepted"
-                                        ? "bg-green-100 text-green-700"
-                                        : offer.status === "Rejected"
-                                            ? "bg-red-100 text-red-700"
-                                            : "bg-yellow-100 text-yellow-700"
-                                        }`}
-                                >
-                                    {offer.status}
-                                </span>
-                            </div>
-
-                            <p className="text-gray-600 text-sm">
-                                Joining Date:{" "}
-                                {new Date(offer.joiningDate).toLocaleDateString()}
-                            </p>
-
-                            {offer.status === "Pending" && (
-                                <div className="mt-5 flex gap-4">
-                                    <button
-                                        onClick={() =>
-                                            handleAction(offer._id, "accept")
-                                        }
-                                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm"
-                                    >
-                                        Accept
-                                    </button>
-
-                                    <button
-                                        onClick={() =>
-                                            handleAction(offer._id, "reject")
-                                        }
-                                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm"
-                                    >
-                                        Reject
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    ))}
+            {!loading && offers.length === 0 && (
+                <div className="bg-white p-6 rounded-xl shadow text-center text-gray-500">
+                    No offer received yet.
                 </div>
+            )}
+
+            <div className="space-y-5">
+                {offers.map((o) => (
+                    <div key={o._id} className="bg-white p-6 rounded-2xl shadow">
+                        <div className="flex justify-between items-center">
+                            <p className="text-lg font-semibold">₹ {o.salary}</p>
+                            <span
+                                className={`px-3 py-1 rounded-full text-sm ${o.status === "Accepted"
+                                    ? "bg-green-100 text-green-700"
+                                    : o.status === "Rejected"
+                                        ? "bg-red-100 text-red-700"
+                                        : o.status === "Expired"
+                                            ? "bg-gray-200 text-gray-700"
+                                            : "bg-yellow-100 text-yellow-700"
+                                    }`}
+                            >
+                                {o.status}
+                            </span>
+                        </div>
+
+                        <p className="text-sm text-gray-600 mt-2">
+                            Joining: {new Date(o.joiningDate).toDateString()}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                            Valid till: {new Date(o.validTill).toDateString()}
+                        </p>
+
+                        {/* ✅ only Sent can accept/reject */}
+                        {o.status === "Sent" && (
+                            <div className="flex gap-3 mt-5">
+                                <button
+                                    disabled={processingId === o._id}
+                                    onClick={() => accept(o._id)}
+                                    className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg disabled:opacity-50"
+                                >
+                                    Accept
+                                </button>
+
+                                <button
+                                    disabled={processingId === o._id}
+                                    onClick={() => reject(o._id)}
+                                    className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg disabled:opacity-50"
+                                >
+                                    Reject
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                ))}
             </div>
         </div>
+
     );
 };
 
-export default CandidateOffer;
+export default CandidateOffers;

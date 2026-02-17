@@ -1,249 +1,251 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Layout from "../../components/Layout";
 import api from "../../api/axios";
+import { toast } from "react-toastify";
 
-const Offers = () => {
+const HROffers = () => {
     const [offers, setOffers] = useState([]);
-    const [jobs, setJobs] = useState([]);
-    const [applications, setApplications] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [selectedApps, setSelectedApps] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [sending, setSending] = useState(false);
 
     const [form, setForm] = useState({
-        jobId: "",
         applicationId: "",
         salary: "",
         joiningDate: "",
         validTill: "",
     });
 
-    // Fetch Offers
+    // ---------------- FETCHERS ----------------
     const fetchOffers = async () => {
         try {
             const res = await api.get("/offers");
-            setOffers(res.data.offers || []);
+
+            // backend might return: offers OR offer (single) OR data.offers
+            const list = res.data?.offers || (res.data?.offer ? [res.data.offer] : []);
+            setOffers(list);
         } catch (error) {
-            console.log(error);
+            toast.error(error.response?.data?.message || "Failed to fetch offers");
+            setOffers([]);
         }
     };
 
-    // Fetch Jobs
-    const fetchJobs = async () => {
+    const fetchSelectedApplications = async () => {
         try {
-            const res = await api.get("/job/all");
-            setJobs(res.data.jobs || []);
+            const res = await api.get("/applications/selected");
+            console.log(res)
+            setSelectedApps(res.data?.applications || []);
         } catch (error) {
-            console.log(error);
-        }
-    };
-
-    // Fetch Applications by Job
-    const fetchApplicationsByJob = async (jobId) => {
-        try {
-            const res = await api.get(`/applications/job/${jobId}`);
-            setApplications(res.data.applications || []);
-        } catch (error) {
-            console.log(error);
+            toast.error(
+                error.response?.data?.message || "Failed to fetch selected applications"
+            );
+            setSelectedApps([]);
         }
     };
 
     useEffect(() => {
-        const loadData = async () => {
-            setLoading(true);
-            await fetchOffers();
-            await fetchJobs();
-            setLoading(false);
-        };
-        loadData();
+        (async () => {
+            try {
+                setLoading(true);
+                await Promise.all([fetchOffers(), fetchSelectedApplications()]);
+            } finally {
+                setLoading(false);
+            }
+        })();
     }, []);
 
+    // for UI preview (selected candidate/job while creating offer)
+    const selectedApp = useMemo(
+        () => selectedApps.find((a) => a._id === form.applicationId),
+        [selectedApps, form.applicationId]
+    );
+
+    // ---------------- HANDLERS ----------------
     const handleChange = (e) => {
         const { name, value } = e.target;
-
-        if (name === "jobId") {
-            fetchApplicationsByJob(value);
-            setForm({
-                ...form,
-                jobId: value,
-                applicationId: "",
-            });
-        } else {
-            setForm({ ...form, [name]: value });
-        }
+        setForm((p) => ({ ...p, [name]: value }));
     };
 
     const createOffer = async (e) => {
         e.preventDefault();
+
+        if (!form.applicationId || !form.salary || !form.joiningDate || !form.validTill) {
+            toast.error("All fields are required");
+            return;
+        }
+
         try {
+            setSending(true);
+
             await api.post("/offers", {
                 applicationId: form.applicationId,
-                salary: form.salary,
+                salary: Number(form.salary),
                 joiningDate: form.joiningDate,
                 validTill: form.validTill,
             });
 
-            await fetchOffers();
+            toast.success("Offer created & sent!");
 
-            setForm({
-                jobId: "",
-                applicationId: "",
-                salary: "",
-                joiningDate: "",
-                validTill: "",
-            });
+            // reset form
+            setForm({ applicationId: "", salary: "", joiningDate: "", validTill: "" });
 
-            setApplications([]);
+            // refresh lists
+            await Promise.all([fetchOffers(), fetchSelectedApplications()]);
         } catch (error) {
-            console.log(error);
+            toast.error(error.response?.data?.message || "Failed to create offer");
+        } finally {
+            setSending(false);
         }
     };
 
+    const safeDate = (d) => {
+        if (!d) return "N/A";
+        const dt = new Date(d);
+        return isNaN(dt.getTime()) ? "N/A" : dt.toDateString();
+    };
+
+    // interviewer/job/candidate may come in different shapes depending on backend population
+    const getOfferApplication = (o) => o?.application || o?.applicationId || null;
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-100 to-indigo-100 p-6">
 
-            <div className="max-w-7xl mx-auto">
+        <div className="max-w-5xl mx-auto px-4 py-10">
+            <h2 className="text-2xl font-bold mb-6">Offer Management</h2>
 
-                <h2 className="text-3xl font-bold text-purple-700 mb-8 text-center">
-                    Offer Management
-                </h2>
+            {/* Create Offer */}
+            <form
+                onSubmit={createOffer}
+                className="bg-white shadow-md rounded-xl p-6 space-y-4"
+            >
+                <h3 className="text-lg font-semibold">Create Offer</h3>
 
-                {/* Create Offer Card */}
-                <div className="bg-white shadow-xl rounded-2xl p-8 mb-10 transition hover:shadow-2xl duration-300">
-                    <h3 className="text-xl font-semibold mb-6 text-gray-700">
-                        Create New Offer
-                    </h3>
+                <select
+                    name="applicationId"
+                    value={form.applicationId}
+                    onChange={handleChange}
+                    className="w-full border rounded-lg px-3 py-2"
+                >
+                    <option value="">Select Selected Candidate</option>
+                    {selectedApps.map((a) => (
+                        <option key={a._id} value={a._id}>
+                            {a.candidate?.name} - {a.candidate?.email} (Job: {a.job?.title})
+                        </option>
+                    ))}
+                </select>
 
-                    <form onSubmit={createOffer} className="grid md:grid-cols-2 gap-6">
+                {/* optional preview */}
+                {selectedApp && (
+                    <div className="border rounded-lg p-3 bg-gray-50 text-sm">
+                        <p className="font-semibold">
+                            Candidate: {selectedApp.candidate?.name} ({selectedApp.candidate?.email})
+                        </p>
+                        <p className="text-gray-600">Job: {selectedApp.job?.title}</p>
+                    </div>
+                )}
 
-                        <select
-                            name="jobId"
-                            value={form.jobId}
-                            onChange={handleChange}
-                            required
-                            className="p-3 border rounded-lg focus:ring-2 focus:ring-purple-400 outline-none"
-                        >
-                            <option value="">Select Job</option>
-                            {jobs.map((job) => (
-                                <option key={job._id} value={job._id}>
-                                    {job.title}
-                                </option>
-                            ))}
-                        </select>
+                <input
+                    type="number"
+                    name="salary"
+                    placeholder="Salary (e.g. 500000)"
+                    value={form.salary}
+                    onChange={handleChange}
+                    className="w-full border rounded-lg px-3 py-2"
+                />
 
-                        <select
-                            name="applicationId"
-                            value={form.applicationId}
-                            onChange={handleChange}
-                            required
-                            disabled={!form.jobId}
-                            className="p-3 border rounded-lg focus:ring-2 focus:ring-purple-400 outline-none disabled:bg-gray-100"
-                        >
-                            <option value="">Select Application</option>
-                            {applications.map((app) => (
-                                <option key={app._id} value={app._id}>
-                                    {app.candidate?.name} ({app.candidate?.email})
-                                </option>
-                            ))}
-                        </select>
-
-                        <input
-                            type="number"
-                            name="salary"
-                            placeholder="Salary"
-                            value={form.salary}
-                            onChange={handleChange}
-                            required
-                            className="p-3 border rounded-lg focus:ring-2 focus:ring-purple-400 outline-none"
-                        />
-
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="text-sm text-gray-600">Joining Date</label>
                         <input
                             type="date"
                             name="joiningDate"
                             value={form.joiningDate}
                             onChange={handleChange}
-                            required
-                            className="p-3 border rounded-lg focus:ring-2 focus:ring-purple-400 outline-none"
+                            className="w-full border rounded-lg px-3 py-2"
                         />
+                    </div>
 
+                    <div>
+                        <label className="text-sm text-gray-600">Valid Till</label>
                         <input
                             type="date"
                             name="validTill"
                             value={form.validTill}
                             onChange={handleChange}
-                            required
-                            className="p-3 border rounded-lg focus:ring-2 focus:ring-purple-400 outline-none"
+                            className="w-full border rounded-lg px-3 py-2"
                         />
-
-                        <button
-                            type="submit"
-                            className="md:col-span-2 bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-semibold transition duration-300 transform hover:scale-105"
-                        >
-                            Create Offer
-                        </button>
-
-                    </form>
+                    </div>
                 </div>
 
-                {/* Offers List */}
-                <h3 className="text-xl font-semibold mb-6 text-gray-700">
-                    All Offers
-                </h3>
+                <button
+                    disabled={sending}
+                    className="bg-purple-600 disabled:opacity-60 hover:bg-purple-700 text-white px-4 py-2 rounded-lg"
+                >
+                    {sending ? "Sending..." : "Send Offer"}
+                </button>
+            </form>
 
-                {loading && (
-                    <div className="text-center text-gray-500">
-                        Loading...
+            {/* All Offers */}
+            <div className="mt-10">
+                <h3 className="text-lg font-semibold mb-4">All Offers</h3>
+
+                {loading ? (
+                    <p>Loading...</p>
+                ) : offers.length === 0 ? (
+                    <p>No offers yet.</p>
+                ) : (
+                    <div className="space-y-4">
+                        {offers.map((o) => {
+                            const app = getOfferApplication(o);
+
+                            const candidateName =
+                                app?.candidate?.name ||
+                                o?.candidate?.name ||
+                                "N/A";
+
+                            const candidateEmail =
+                                app?.candidate?.email ||
+                                o?.candidate?.email ||
+                                "";
+
+                            const jobTitle =
+                                app?.job?.title ||
+                                o?.job?.title ||
+                                "N/A";
+
+                            const jobLocation =
+                                app?.job?.location ||
+                                o?.job?.location ||
+                                "";
+
+                            return (
+                                <div key={o._id} className="bg-white border rounded-xl p-5">
+                                    <div className="flex items-center justify-between">
+                                        <p className="font-semibold">Salary: ₹{o.salary}</p>
+                                        <span className="text-sm px-2 py-1 rounded bg-gray-100">
+                                            {o.status || "Pending"}
+                                        </span>
+                                    </div>
+
+                                    <p className="text-sm text-gray-700 mt-2">
+                                        <b>Candidate:</b> {candidateName}{" "}
+                                        {candidateEmail ? `(${candidateEmail})` : ""}
+                                    </p>
+
+                                    <p className="text-sm text-gray-700">
+                                        <b>Job:</b> {jobTitle} {jobLocation ? `• ${jobLocation}` : ""}
+                                    </p>
+
+                                    <p className="mt-2">Joining: {safeDate(o.joiningDate)}</p>
+                                    <p>Valid Till: {safeDate(o.validTill)}</p>
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
-
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-                    {!loading &&
-                        offers.map((offer) => (
-                            <div
-                                key={offer._id}
-                                className="bg-white rounded-2xl shadow-md p-6 transition transform hover:-translate-y-2 hover:shadow-xl duration-300"
-                            >
-                                <h4 className="text-lg font-bold text-purple-600 mb-2">
-                                    {offer.application?.job?.title}
-                                </h4>
-
-                                <p className="text-sm text-gray-600">
-                                    Candidate:{" "}
-                                    <span className="font-semibold">
-                                        {offer.application?.candidate?.name}
-                                    </span>
-                                </p>
-
-                                <p className="mt-2 text-gray-700">
-                                    Salary: ₹{offer.salary}
-                                </p>
-
-                                <p className="text-gray-500 text-sm mt-1">
-                                    Joining: {new Date(offer.joiningDate).toLocaleDateString()}
-                                </p>
-
-                                <p className="text-gray-500 text-sm">
-                                    Valid Till: {new Date(offer.validTill).toLocaleDateString()}
-                                </p>
-
-                                <div className="mt-4">
-                                    <span
-                                        className={`px-3 py-1 rounded-full text-xs font-semibold ${offer.status === "Accepted"
-                                            ? "bg-green-100 text-green-600"
-                                            : offer.status === "Rejected"
-                                                ? "bg-red-100 text-red-600"
-                                                : "bg-yellow-100 text-yellow-600"
-                                            }`}
-                                    >
-                                        {offer.status}
-                                    </span>
-                                </div>
-                            </div>
-                        ))}
-
-                </div>
-
             </div>
         </div>
+
     );
 };
 
-export default Offers;
+export default HROffers;

@@ -1,48 +1,73 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import api from "../api/axios";
 import { toast } from "react-toastify";
-import { Navigate } from "react-router-dom";
 
-
-const AuthContext = createContext()
+const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null)
-    const [loading, setLoading] = useState(true)
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     const getMe = async () => {
         try {
-            const res = await api.get("/auth/me")
-            console.log("fetch me in context", res)
-            setUser(res.data.user)
+            const { data } = await api.get("/auth/me");
+            setUser(data.user);
+            return data.user;
         } catch (error) {
-            toast.error(error.message)
-            setUser(null)
+            // ✅ Don't toast here (user might not be logged in on refresh)
+            setUser(null);
+            return null;
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
 
     const login = async (email, password) => {
-        await api.post('/auth/login', { email, password })
-        const res = await api.get("/auth/me")
-        setUser(res.data.user)
-        return res.data.user
-    }
+        try {
+            await api.post("/auth/login", { email, password });
+
+            const me = await getMe(); // ✅ reuse same function
+            if (!me) throw new Error("Login failed. Please try again.");
+            return me;
+        } catch (error) {
+            const msg =
+                error.response?.data?.message || error.message || "Login failed";
+            throw new Error(msg);
+        }
+    };
+
+    const register = async (formData) => {
+        try {
+            const { data } = await api.post("/auth/signup", formData);
+            return data;
+        } catch (error) {
+            const msg =
+                error.response?.data?.message || error.message || "Signup failed";
+            throw new Error(msg);
+        }
+    };
 
     const logout = async () => {
-        await api.post("/auth/logout")
-        setUser(null)
-        toast.success("Logged out successfully")
-        window.location.replace("/login")
-    }
+        try {
+            await api.post("/auth/logout");
+        } catch (error) {
+            // ignore
+        } finally {
+            setUser(null);
+            toast.success("Logged out successfully");
+            // ✅ no window.location.replace
+        }
+    };
 
     useEffect(() => {
-        getMe()
-    }, [])
-    return (
-        <AuthContext.Provider value={{ user, login, logout, loading, }}>{children}</AuthContext.Provider>
-    )
-}
+        getMe();
+    }, []);
 
-export const useAuth = () => useContext(AuthContext)
+    return (
+        <AuthContext.Provider value={{ user, loading, login, logout, register }}>
+            {children}
+        </AuthContext.Provider>
+    );
+};
+
+export const useAuth = () => useContext(AuthContext);

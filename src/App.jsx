@@ -3,7 +3,6 @@ import "./App.css";
 import { useAuth } from "./context/AuthContext";
 import { Navigate, Routes, Route } from "react-router-dom";
 
-import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
@@ -22,11 +21,15 @@ import JobDetails from "./pages/candidate/JobDetails";
 import Applications from "./pages/recruiter/Applications";
 import MyInterviews from "./pages/interviewer/MyInterviews";
 
-import Offers from "./pages/hr/Offers";
+import Offers from "./pages/hr/Offers"; // HR offers page
 import CandidateOffer from "./pages/candidate/CandidateOffer";
 
 import Layout from "./components/Layout";
 import RoleRoute from "./routes/RoleRoute";
+
+import HRInterviews from "./pages/hr/Interviews";
+import MyApplications from "./pages/candidate/MyApplications";
+import CandidateInterviews from "./pages/candidate/CandidateInterviews";
 
 const App = () => {
   const { loading } = useAuth();
@@ -35,12 +38,11 @@ const App = () => {
 
   return (
     <Routes>
-
-      {/* Public Routes */}
+      {/* ✅ Public */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
 
-      {/* HR Routes */}
+      {/* ✅ HR */}
       <Route
         path="/hr"
         element={
@@ -96,7 +98,18 @@ const App = () => {
         }
       />
 
-      {/* Recruiter Routes */}
+      <Route
+        path="/hr/interviews"
+        element={
+          <RoleRoute allowedRoles={["HR", "Recruiter"]}>
+            <Layout>
+              <HRInterviews />
+            </Layout>
+          </RoleRoute>
+        }
+      />
+
+      {/* ✅ Recruiter */}
       <Route
         path="/recruiter"
         element={
@@ -111,7 +124,7 @@ const App = () => {
       <Route
         path="/recruiter/applications"
         element={
-          <RoleRoute allowedRoles={["Recruiter"]}>
+          <RoleRoute allowedRoles={["Recruiter", "HR"]}>
             <Layout>
               <Applications />
             </Layout>
@@ -119,7 +132,7 @@ const App = () => {
         }
       />
 
-      {/* Interviewer Routes */}
+      {/* ✅ Interviewer */}
       <Route
         path="/interviewer"
         element={
@@ -142,7 +155,7 @@ const App = () => {
         }
       />
 
-      {/* Candidate Routes */}
+      {/* ✅ Candidate */}
       <Route
         path="/candidate"
         element={
@@ -177,6 +190,28 @@ const App = () => {
       />
 
       <Route
+        path="/candidate/applications"
+        element={
+          <RoleRoute allowedRoles={["Candidate"]}>
+            <Layout>
+              <MyApplications />
+            </Layout>
+          </RoleRoute>
+        }
+      />
+
+      <Route
+        path="/candidate/interviews"
+        element={
+          <RoleRoute allowedRoles={["Candidate"]}>
+            <Layout>
+              <CandidateInterviews />
+            </Layout>
+          </RoleRoute>
+        }
+      />
+
+      <Route
         path="/candidate/offers"
         element={
           <RoleRoute allowedRoles={["Candidate"]}>
@@ -187,9 +222,8 @@ const App = () => {
         }
       />
 
-      {/* Default */}
+      {/* ✅ Default */}
       <Route path="*" element={<Navigate to="/login" />} />
-
     </Routes>
   );
 };

@@ -115,7 +115,7 @@ const Login = () => {
                         </div>
 
                         {/* Social Icons */}
-                        <div className="flex justify-center gap-6 text-xl">
+                        {/* <div className="flex justify-center gap-6 text-xl">
                             <button className="hover:scale-110 transition">
                                 <img
                                     src="https://cdn-icons-png.flaticon.com/512/300/300221.png"
@@ -139,14 +139,18 @@ const Login = () => {
                                     className="w-6"
                                 />
                             </button>
-                        </div>
+                        </div> */}
 
                         {/* Register */}
                         <p className="text-center text-sm text-gray-600 mt-4">
                             Don't have an account?{" "}
-                            <span className="text-purple-600 font-medium cursor-pointer hover:underline">
+                            <span
+                                onClick={() => navigate("/signup")}
+                                className="text-purple-600 font-medium cursor-pointer hover:underline"
+                            >
                                 Register
                             </span>
+
                         </p>
                     </form>
                 </div>

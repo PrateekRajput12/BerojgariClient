@@ -1,22 +1,29 @@
 export const roleDashboardData = {
     HR: [
-        { title: "Manage Recruiters", desc: "View and manage all recruiters" },
-        { title: "Company Reports", desc: "Analytics and hiring reports" },
-        { title: "Post Announcements", desc: "Notify company employees" },
+        { title: "Manage Jobs", desc: "Create, edit, close job posts", url: "/hr/jobs" },
+        { title: "Offer Management", desc: "Send offers & view all offers", url: "/hr/offers" },
+        { title: "Interview Management", desc: "Schedule interviews & track rounds", url: "/hr/interviews" },
+
+        // optional (only add when you actually build these pages)
+        // { title: "Manage Recruiters", desc: "View and manage recruiters", url: "/hr/recruiters" },
+        // { title: "Company Reports", desc: "Analytics and hiring reports", url: "/hr/reports" },
+        // { title: "Post Announcements", desc: "Notify company employees", url: "/hr/announcements" },
     ],
+
     Recruiter: [
-        { title: "Post New Job", desc: "Create and publish job openings" },
-        { title: "View Applications", desc: "Review candidate applications" },
-        { title: "Schedule Interviews", desc: "Assign interviews easily" },
+        { title: "View Applications", desc: "Review candidate applications", url: "/recruiter/applications" },
+        { title: "Interview Management", desc: "Schedule interviews for shortlisted", url: "/hr/interviews" },
+        // If you want recruiter to have a separate page later, change URL then.
     ],
+
     Interviewer: [
-        { title: "My Interviews", desc: "View assigned interviews" },
-        { title: "Submit Feedback", desc: "Give interview feedback" },
-        { title: "Candidate Profiles", desc: "Review candidate details" },
+        { title: "My Interviews", desc: "View assigned interviews & submit feedback", url: "/interviewer/my-interviews" },
     ],
+
     Candidate: [
-        { title: "Browse Jobs", desc: "Find jobs that match your skills" },
-        { title: "My Applications", desc: "Track your job applications" },
-        { title: "Interview Status", desc: "Check interview updates" },
+        { title: "Browse Jobs", desc: "Find jobs that match your skills", url: "/candidate/jobs" },
+        { title: "My Applications", desc: "Track your application status", url: "/candidate/applications" },
+        { title: "Interview Status", desc: "Check interview schedule & result", url: "/candidate/interviews" },
+        { title: "My Offers", desc: "Track your job offers", url: "/candidate/offers" },
     ],
 };
